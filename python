@@ -1,0 +1,96 @@
+pip install snowflake-connector-python
+
+import requests
+import pandas as pd
+import json
+from snowflake.connector.pandas_tools import write_pandas
+import snowflake.connector
+import os
+
+# Creating different variables for movie parameters
+movie_type = "feature"
+
+release_year_start = "2000-01-01"
+release_year_end = "2022-01-01"
+release_year_final = release_year_start + "," + release_year_end
+
+genre = "drama"
+genre_2 = "thriller"
+genres_final = genre + "," + genre_2
+
+votes_min = "50000"
+votes_max = "100000000"
+votes_final = votes_min + "," + votes_max
+
+countries = "us"
+languages = "en"
+
+records = "250"
+sort = "user_rating,desc"
+
+# URL variables
+base_url = "https://imdb-api.com/API/AdvancedSearch/k_562pntk1?"
+final_url = base_url+"title_type="+movie_type+"&release_date="+release_year_final+"&genres="+genres_final+"&countries="+countries+"&languages="+languages+"&count="+records+"&sort="+sort + "&num_votes=" + votes_final
+
+
+response = requests.request("GET", final_url)
+response.json()
+
+data = response.json()
+
+
+# Checking results for a single movie
+data['results'][0]
+
+# Creating empty dataframe to store results
+df = pd.DataFrame(columns=["MOVIE_TITLE","MOVIE_ID","MOVIE_GENRES","IMDB_RATING","IMDB_VOTES","METACRITIC_RATING","MOVIE_STARS","MOVIE_RUNTIME"])
+
+# Looping through the different elemnts and appending to the dataframe
+for movie in data['results']:
+  movie_title = movie['title']
+  movie_id = movie['id']
+  movie_genres = movie['genres']
+  imdb_rating = movie['imDbRating']
+  imdb_votes = movie['imDbRatingVotes']
+  metacritic_rating = movie['metacriticRating']
+  movie_stars = movie['stars']
+  movie_runtime = movie['runtimeStr']
+
+  df = df.append({'MOVIE_TITLE': movie_title,
+                  'MOVIE_ID': movie_id,
+                  'MOVIE_GENRES': movie_genres,
+                  'IMDB_RATING': imdb_rating,
+                  'IMDB_VOTES': imdb_votes,
+                  'METACRITIC_RATING': metacritic_rating,
+                  'MOVIE_STARS': movie_stars,
+                  'MOVIE_RUNTIME': movie_runtime}, ignore_index=True)
+
+
+df
+
+# Snowflake Configuration
+table_name = 'MOVIES_REVIEWS'
+schema = 'DEV'
+database = 'MOVIES'
+
+#Use the Snowfake user required, recommended to save these as env variables
+
+conn = snowflake.connector.connect(
+        user='##########',
+        password='##########',
+        account='##########',
+        region = 'us-east-2.aws',
+        role = 'ACCOUNTADMIN',
+        warehouse = 'COMPUTE_WH'
+    )
+
+        conn.cursor().execute("USE WAREHOUSE COMPUTE_WH")
+        conn.cursor().execute("USE DATABASE MOVIES")
+        conn.cursor().execute("USE SCHEMA MOVIES.DEV")
+        
+# Writing to Snowflake
+write_pandas(
+            conn=conn,
+            df=df,
+            table_name=table_name
+        )
