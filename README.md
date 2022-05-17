@@ -1,8 +1,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Created a data pipeline that connects to the IMDB API, pulls movie information, and imports it into my personal Snowflake database. The script is constructed so that different API parameters can be adjusted depending on the necessary data pull.
-
+Created a data pipeline that connects to the IMDB API, pulls movie information, and imports it into my personal Snowflake database. The script is constructed so that different  variables/API parameters can be adjusted depending on the type of movie data you're interested in analyzing. 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
