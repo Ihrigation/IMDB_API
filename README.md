@@ -27,6 +27,6 @@ Created a data pipeline that connects to the IMDB API, pulls movie information, 
 
 Your Name - [@brandon_ihrig](https://twitter.com/brandon_ihrig) - brandonmihrig@gmail.com
 
-Project Link: [https://github.com/Ihrigation/TacoBell_Price_Updates](https://github.com/Ihrigation/TacoBell_Price_Updates)
+Project Link: [https://github.com/Ihrigation/IMDB_API](https://github.com/Ihrigation/IMDB_API)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
